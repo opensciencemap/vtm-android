@@ -465,15 +465,13 @@ public class MapViewPosition {
 
 	private PointD applyRotation(float mx, float my) {
 
-		if (mMapView.mRotationEnabled || mMapView.mCompassEnabled) {
-			double rad = Math.toRadians(mRotation);
-			double rcos = Math.cos(rad);
-			double rsin = Math.sin(rad);
-			float x = (float) (mx * rcos + my * rsin);
-			float y = (float) (mx * -rsin + my * rcos);
-			mx = x;
-			my = y;
-		}
+		double rad = Math.toRadians(mRotation);
+		double rcos = Math.cos(rad);
+		double rsin = Math.sin(rad);
+		float x = (float) (mx * rcos + my * rsin);
+		float y = (float) (mx * -rsin + my * rcos);
+		mx = x;
+		my = y;
 
 		mMovePoint.x = mx;
 		mMovePoint.y = my;

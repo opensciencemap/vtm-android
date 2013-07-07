@@ -17,7 +17,6 @@ package org.oscim.view;
 
 import java.util.List;
 
-import org.oscim.android.Compass;
 import org.oscim.android.MapActivity;
 import org.oscim.core.BoundingBox;
 import org.oscim.core.GeoPoint;
@@ -53,7 +52,6 @@ public class MapView extends RelativeLayout {
 	public static final boolean testRegionZoom = false;
 
 	public boolean mRotationEnabled = false;
-	public boolean mCompassEnabled = false;
 	public boolean enablePagedFling = false;
 
 	private final GLView mGLView;
@@ -61,8 +59,6 @@ public class MapView extends RelativeLayout {
 	private final LayerManager mLayerManager;
 	private final MapViewPosition mMapViewPosition;
 	private final MapPosition mMapPosition;
-
-	private final Compass mCompass;
 
 	private DebugSettings mDebugSettings;
 
@@ -118,8 +114,6 @@ public class MapView extends RelativeLayout {
 		mMapPosition = new MapPosition();
 
 		mLayerManager = new LayerManager(context);
-
-		mCompass = new Compass(mapActivity, this);
 
 		mGLView = new GLView(context, this);
 
@@ -182,16 +176,9 @@ public class MapView extends RelativeLayout {
 
 	public void onPause() {
 		mPausing = true;
-
-		if (this.mCompassEnabled)
-			mCompass.disable();
-
 	}
 
 	public void onResume() {
-		if (this.mCompassEnabled)
-			mCompass.enable();
-
 		mPausing = false;
 	}
 
@@ -354,29 +341,6 @@ public class MapView extends RelativeLayout {
 
 	public void enableRotation(boolean enable) {
 		mRotationEnabled = enable;
-
-		if (enable) {
-			enableCompass(false);
-		}
-	}
-
-	public void enableCompass(boolean enable) {
-		if (enable == mCompassEnabled)
-			return;
-
-		mCompassEnabled = enable;
-
-		if (enable)
-			enableRotation(false);
-
-		if (enable)
-			mCompass.enable();
-		else
-			mCompass.disable();
-	}
-
-	public boolean getCompassEnabled() {
-		return mCompassEnabled;
 	}
 
 	public boolean getRotationEnabled() {
