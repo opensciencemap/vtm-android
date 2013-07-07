@@ -7,5 +7,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/osmosis-osm-binary-0.43.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/protobuf-java-2.4.1.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
