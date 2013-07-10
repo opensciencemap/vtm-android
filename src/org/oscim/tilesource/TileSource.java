@@ -19,16 +19,24 @@ import java.util.HashMap;
 public abstract class TileSource {
 
 	public abstract ITileDataSource getDataSource();
+
 	public abstract OpenResult open();
+
 	public abstract void close();
 
 	protected final Options options = new Options();
 
-	public void setOption(String key, String value){
+	public ITileCache tileCache;
+
+	public void setCache(ITileCache cache){
+		tileCache = cache;
+	}
+
+	public void setOption(String key, String value) {
 		options.put(key, value);
 	}
 
-	public String getOption(String key){
+	public String getOption(String key) {
 		return options.get(key);
 	}
 
@@ -38,7 +46,6 @@ public abstract class TileSource {
 	 *             if no map is currently opened.
 	 */
 	public abstract MapInfo getMapInfo();
-
 
 	public static class Options extends HashMap<String, String> {
 
@@ -59,7 +66,10 @@ public abstract class TileSource {
 			return true;
 		}
 	}
+
 	/**
+	 * Copyright 2010, 2011, 2012 mapsforge.org
+	 *
 	 * A FileOpenResult is a simple DTO which is returned by
 	 * IMapDatabase#open().
 	 */
@@ -103,17 +113,6 @@ public abstract class TileSource {
 		 */
 		public boolean isSuccess() {
 			return this.success;
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append("FileOpenResult [success=");
-			stringBuilder.append(this.success);
-			stringBuilder.append(", errorMessage=");
-			stringBuilder.append(this.errorMessage);
-			stringBuilder.append("]");
-			return stringBuilder.toString();
 		}
 	}
 }

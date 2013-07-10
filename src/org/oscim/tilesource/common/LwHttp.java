@@ -47,7 +47,7 @@ public class LwHttp {
 	private int mMaxReq = 0;
 	private Socket mSocket;
 	private OutputStream mCommandStream;
-	private InputStream mResponseStream;
+	private InputStream mInputStream;
 	private long mLastRequest = 0;
 	private SocketAddress mSockAddr;
 
@@ -88,19 +88,31 @@ public class LwHttp {
 	}
 
 	static class Buffer extends BufferedInputStream {
-		public Buffer(InputStream is) {
+		final OutputStream mCache;
+
+		public Buffer(InputStream is, OutputStream cache) {
 			super(is, 4096);
+			mCache = cache;
 		}
 
 		@Override
 		public synchronized int read() throws IOException {
-			return super.read();
+			int data = super.read();
+			if (data >= 0)
+				mCache.write(data);
+
+			return data;
 		}
 
 		@Override
 		public synchronized int read(byte[] buffer, int offset, int byteCount)
 				throws IOException {
-			return super.read(buffer, offset, byteCount);
+			int len = super.read(buffer, offset, byteCount);
+
+			if (len >= 0)
+				mCache.write(buffer, offset, len);
+
+			return len;
 		}
 	}
 
@@ -118,7 +130,7 @@ public class LwHttp {
 
 	public InputStream readHeader() throws IOException {
 
-		InputStream is = mResponseStream;
+		InputStream is = mInputStream;
 		is.mark(4096);
 
 		byte[] buf = buffer;
@@ -185,6 +197,10 @@ public class LwHttp {
 		is.mark(0);
 		is.skip(end);
 
+		if (mCacheOutputStream != null){
+			is = new Buffer(is, mCacheOutputStream);
+		}
+
 		if (mInflateContent)
 			return new InflaterInputStream(is);
 
@@ -213,11 +229,11 @@ public class LwHttp {
 			// Log.d(TAG, "create connection");
 		} else {
 			// FIXME not sure if this is correct way to drain socket
-			int avail = mResponseStream.available();
+			int avail = mInputStream.available();
 			if (avail > 0) {
 				Log.d(TAG, "Consume left-over bytes: " + avail);
-				while ((avail = mResponseStream.available()) > 0)
-					mResponseStream.read(buffer);
+				while ((avail = mInputStream.available()) > 0)
+					mInputStream.read(buffer);
 			}
 		}
 
@@ -265,7 +281,7 @@ public class LwHttp {
 		mSocket.setTcpNoDelay(true);
 
 		mCommandStream = mSocket.getOutputStream();
-		mResponseStream = new BufferedInputStream(mSocket.getInputStream());
+		mInputStream = new BufferedInputStream(mSocket.getInputStream());
 
 		return true;
 	}
@@ -317,6 +333,7 @@ public class LwHttp {
 
 	public void requestCompleted() {
 		mLastRequest = SystemClock.elapsedRealtime();
+		mCacheOutputStream = null;
 	}
 
 	public int getContentLength() {
@@ -333,6 +350,12 @@ public class LwHttp {
 	 */
 	protected int formatTilePath(Tile tile, byte[] path, int curPos) {
 		return 0;
+	}
+
+	OutputStream mCacheOutputStream;
+
+	public void setOutputStream(OutputStream outputStream) {
+		mCacheOutputStream = outputStream;
 	}
 
 }

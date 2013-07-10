@@ -17,6 +17,7 @@ package org.oscim.tilesource.oscimap;
 import java.net.URL;
 
 import org.oscim.tilesource.ITileDataSource;
+import org.oscim.tilesource.TileSource;
 import org.oscim.tilesource.common.LwHttp;
 import org.oscim.tilesource.common.PbfTileDataSource;
 import org.oscim.tilesource.common.UrlTileSource;
@@ -28,12 +29,12 @@ public class OSciMap1TileSource extends UrlTileSource {
 
 	@Override
 	public ITileDataSource getDataSource() {
-		return new TileDataSource(mUrl);
+		return new TileDataSource(this, mUrl);
 	}
 
 	class TileDataSource extends PbfTileDataSource {
-		public TileDataSource(URL url) {
-			super(new TileDecoder());
+		public TileDataSource(TileSource tileSource, URL url) {
+			super(tileSource, new TileDecoder());
 			mConn = new LwHttp(url, "application/osmtile", "osmtile", false);
 		}
 	}
