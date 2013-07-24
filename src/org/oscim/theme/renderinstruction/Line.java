@@ -209,6 +209,10 @@ public final class Line extends RenderInstruction {
 		this(0, "", stroke, width, cap, true, 0, 0, 0, -1, 0, false, 0);
 	}
 
+	public Line(int level, int stroke, float width) {
+		this(level, "", stroke, width, Cap.BUTT, true, 0, 0, 0, -1, 0, false, 0);
+	}
+
 	@Override
 	public void renderWay(IRenderCallback renderCallback) {
 		renderCallback.renderWay(this, level);

@@ -144,6 +144,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		mUpdateColor = true;
 	}
 
+	public static void setBackgroundColor(int color) {
+		mClearColor = GlUtils.colorToFloat(color);
+		mUpdateColor = true;
+	}
+
 	/**
 	 * Only use on GL Thread!
 	 * Get a native ShortBuffer for temporary use.

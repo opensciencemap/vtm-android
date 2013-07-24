@@ -127,14 +127,23 @@ public final class Text extends RenderInstruction {
 
 	public TextureRegion texture;
 
+
 	public static Text createText(float fontSize, float strokeWidth, int fill, int outline,
 			boolean billboard) {
 
-		Text t = new Text("", "", FontFamily.DEFAULT, FontStyle.NORMAL,
+		return createText("", fontSize, strokeWidth, fill, outline, billboard);
+	}
+
+
+	public static Text createText(String textKey, float fontSize, float strokeWidth, int fill, int outline,
+			boolean billboard) {
+
+		Text t = new Text("", textKey, FontFamily.DEFAULT, FontStyle.NORMAL,
 				fontSize, fill, outline, strokeWidth, 0, billboard, null, Integer.MAX_VALUE);
 		FontMetrics fm = t.paint.getFontMetrics();
 		t.fontHeight = (float) Math.ceil(Math.abs(fm.bottom) + Math.abs(fm.top));
 		t.fontDescent = (float) Math.ceil(Math.abs(fm.bottom));
+
 		return t;
 	}
 

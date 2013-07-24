@@ -219,4 +219,12 @@ public class MapTileLayer extends TileLayer<MapTileLoader> {
 		return false;
 	}
 
+	public void setRenderTheme(IRenderTheme theme) {
+		pauseLoaders(true);
+
+		for (MapTileLoader g : mTileLoader)
+			g.setRenderTheme(theme);
+
+		resumeLoaders();
+	}
 }

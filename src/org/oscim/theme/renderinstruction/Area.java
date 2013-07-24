@@ -80,6 +80,17 @@ public final class Area extends RenderInstruction {
 		}
 	}
 
+	public Area(int level, int fill) {
+		this.level = level;
+		this.style = "";
+		this.fade = -1;
+		blendColor = 0;
+		blend = -1;
+		strokeWidth = 0;
+
+		color = fill;
+	}
+
 	public Area(int fill) {
 		this.level = 0;
 		this.style = "";
