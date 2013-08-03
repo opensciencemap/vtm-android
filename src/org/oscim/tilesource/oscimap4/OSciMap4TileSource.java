@@ -32,7 +32,8 @@ public class OSciMap4TileSource extends UrlTileSource {
 	class TileDataSource extends PbfTileDataSource {
 		public TileDataSource(TileSource tileSource, URL url) {
 			super(tileSource, new TileDecoder());
-			mConn = new LwHttp(url, "application/x-protobuf", "vtm", false);
+			//mConn = new LwHttp(url, "application/x-protobuf", "vtm", false);
+			mConn = new LwHttp(url, "image/png", "vtm", false);
 		}
 	}
 }
