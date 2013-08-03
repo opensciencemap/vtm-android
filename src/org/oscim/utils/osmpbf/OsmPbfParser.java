@@ -33,7 +33,7 @@ public class OsmPbfParser extends BinaryParser {
 	//     * @param info The info protobuf.
 	//     * @return The OsmUser object */
 	//    OsmUser getUser(Osmformat.Info info) {
-	//        // System.out.println(info);
+	//        // Log.d(TAG, info);
 	//        if (info.hasUid() && info.hasUserSid()) {
 	//            if (info.getUid() < 0) {
 	//              return OsmUser.NONE;

@@ -14,6 +14,8 @@
  */
 package org.oscim.core;
 
+import android.util.Log;
+
 /**
  * A tag represents an immutable key-value pair.
  */
@@ -21,6 +23,8 @@ package org.oscim.core;
 // TODO: use own stringshare method instead of internalized strings
 
 public class Tag {
+	private static final String TAG = Tag.class.getName();
+
 	private static final char KEY_VALUE_SEPARATOR = '=';
 	/**
 	 * The key of the house number OpenStreetMap tag.
@@ -77,7 +81,7 @@ public class Tag {
 	public Tag(String tag) {
 		int splitPosition = tag.indexOf(KEY_VALUE_SEPARATOR);
 		if (splitPosition < 0) {
-			System.out.println("TAG:" + tag);
+			Log.d(TAG, "TAG:" + tag);
 		}
 		this.key = tag.substring(0, splitPosition).intern();
 		this.value = tag.substring(splitPosition + 1).intern();

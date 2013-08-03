@@ -41,6 +41,8 @@ import org.oscim.utils.osm.OSMNode;
 import org.oscim.utils.osm.OSMRelation;
 import org.oscim.utils.osm.OSMWay;
 
+import android.util.Log;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -54,6 +56,7 @@ public class OverpassAPIReader  {
 	 * The timeout we use for the HttpURLConnection.
 	 */
 	private static final int TIMEOUT = 15000;
+	private static final String TAG = OverpassAPIReader.class.getName();
 
 	/**
 	 * The base url of the server. Defaults to.
@@ -339,11 +342,6 @@ public class OverpassAPIReader  {
 		return tags;
 	}
 
-	private static void log(String msg) {
-		System.out.println(msg);
-	}
-
-
 	public OSMData getData() {
 
 		String encoded;
@@ -353,7 +351,7 @@ public class OverpassAPIReader  {
 			e1.printStackTrace();
 			return null;
 		}
-		System.out.println(myBaseUrl + "?data=" + encoded);
+		Log.d(TAG, myBaseUrl + "?data=" + encoded);
 
 		InputStream inputStream = null;
 
@@ -401,7 +399,7 @@ public class OverpassAPIReader  {
 				}
 			}
 		}
-		log("nodes: " + ownNodes.size() + " ways: " + ownWays.size()
+		Log.d(TAG, "nodes: " + ownNodes.size() + " ways: " + ownWays.size()
 				+ " relations: " + ownRelations.size());
 
 		// give up references to original collections
