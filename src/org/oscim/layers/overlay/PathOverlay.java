@@ -60,7 +60,7 @@ public class PathOverlay extends Layer {
 		public RenderPath(MapView mapView) {
 			super(mapView);
 			mClipper = new LineClipper(-max, -max, max, max, true);
-			mPPoints = new float[1];
+			mPPoints = new float[2];
 			layers.addLineLayer(0, mLineStyle);
 		}
 
