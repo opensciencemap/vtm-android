@@ -31,11 +31,11 @@ import org.oscim.utils.Matrix4;
 import org.oscim.utils.quadtree.QuadTree;
 
 import android.opengl.GLES20;
+
 /**
  * This class is for rendering the Line- and PolygonLayers of visible MapTiles.
  * For visible tiles that do not have data available yet its parent in children
  * tiles are rendered when available.
- *
  */
 public class TileRenderer {
 	//private final static String TAG = TileRenderer.class.getName();
@@ -48,14 +48,28 @@ public class TileRenderer {
 	private static int mDrawSerial = 0;
 
 	private static Matrices mMatrices;
-	private static boolean mFaded;
+
+	private static float mFade;
+	private static int mOverdraw;
 
 	private static final Matrix4 mProjMatrix = new Matrix4();
 
-	static void draw(MapTile[] tiles, int tileCnt, MapPosition pos, Matrices m, boolean fade) {
+	/**
+	 * Draw tiles:
+	 *
+	 * @param fade
+	 *            alpha value for bitmap tiles
+	 * @param overdrawColor
+	 *            draw color on top, e.g. to darken the layer temporarily
+	 */
+	static void draw(MapTile[] tiles, int tileCnt, MapPosition pos, Matrices m, float fade,
+			int overdrawColor) {
+
 		mOffsetCnt = -2048;
 		mMatrices = m;
-		mFaded = fade;
+
+		mFade = fade;
+		mOverdraw = overdrawColor;
 
 		mProjMatrix.copy(m.proj);
 		// discard depth projection from tilt, we use depth buffer
@@ -187,7 +201,7 @@ public class TileRenderer {
 		for (Layer l = t.layers.textureLayers; l != null;) {
 			switch (l.type) {
 				case Layer.BITMAP:
-					l = BitmapRenderer.draw(l, 1, m);
+					l = BitmapRenderer.draw(l, m, 1, mFade);
 					break;
 
 				default:
@@ -195,11 +209,7 @@ public class TileRenderer {
 			}
 		}
 
-		// clear clip-region and could also draw 'fade-effect'
-		if (mFaded)
-			PolygonRenderer.drawOver(m, true, 0x22000000);
-		else
-			PolygonRenderer.drawOver(m, false, 0);
+		PolygonRenderer.drawOver(m, mOverdraw);
 	}
 
 	private static int drawProxyChild(MapTile tile, MapPosition pos) {

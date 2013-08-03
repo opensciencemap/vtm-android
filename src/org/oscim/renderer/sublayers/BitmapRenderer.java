@@ -37,6 +37,8 @@ public final class BitmapRenderer {
 	private static int hTextureScreenScale;
 	private static int hTextureTexCoord;
 
+	private static int hAlpha;
+
 	public final static int INDICES_PER_SPRITE = 6;
 	final static int VERTICES_PER_SPRITE = 4;
 	final static int SHORTS_PER_VERTICE = 6;
@@ -49,11 +51,14 @@ public final class BitmapRenderer {
 		hTextureProjMatrix = GLES20.glGetUniformLocation(mTextureProgram, "u_proj");
 		hTextureScale = GLES20.glGetUniformLocation(mTextureProgram, "u_scale");
 		hTextureScreenScale = GLES20.glGetUniformLocation(mTextureProgram, "u_swidth");
+
+		hAlpha = GLES20.glGetUniformLocation(mTextureProgram, "u_alpha");
+
 		hTextureVertex = GLES20.glGetAttribLocation(mTextureProgram, "vertex");
 		hTextureTexCoord = GLES20.glGetAttribLocation(mTextureProgram, "tex_coord");
 	}
 
-	public static Layer draw(Layer layer, float scale, Matrices m) {
+	public static Layer draw(Layer layer, Matrices m, float scale, float alpha) {
 		GLState.test(false, false);
 		GLState.blend(true);
 
@@ -67,6 +72,8 @@ public final class BitmapRenderer {
 			GLES20.glUniform1f(hTextureScale, (float) Math.sqrt(scale));
 		else
 			GLES20.glUniform1f(hTextureScale, 1);
+
+		GLES20.glUniform1f(hAlpha, alpha);
 
 		GLES20.glUniform1f(hTextureScreenScale, 1f / GLRenderer.screenWidth);
 
@@ -107,9 +114,6 @@ public final class BitmapRenderer {
 		return layer.next;
 	}
 
-	//private final static double TEX_COORD_DIV = 1.0 / (1024 * COORD_SCALE);
-	//private final static double COORD_DIV = 1.0 / GLRenderer.COORD_SCALE;
-
 	private final static String textVertexShader = ""
 			+ "precision mediump float; "
 			+ "attribute vec4 vertex;"
@@ -119,18 +123,17 @@ public final class BitmapRenderer {
 			+ "uniform float u_scale;"
 			+ "uniform float u_swidth;"
 			+ "varying vec2 tex_c;"
-			//+ "const vec2 div = vec2(" + TEX_COORD_DIV + "," + TEX_COORD_DIV + ");"
-			//+ "const float coord_scale = " + COORD_DIV + ";"
 			+ "void main() {"
 			+ "  gl_Position = u_mv * vec4(vertex.xy, 0.0, 1.0);"
-			+ "  tex_c = tex_coord;" // * div;"
+			+ "  tex_c = tex_coord;"
 			+ "}";
 
 	private final static String textFragmentShader = ""
 			+ "precision mediump float;"
 			+ "uniform sampler2D tex;"
+			+ "uniform float u_alpha;"
 			+ "varying vec2 tex_c;"
 			+ "void main() {"
-			+ "   gl_FragColor = texture2D(tex, tex_c.xy);"
+			+ "   gl_FragColor = texture2D(tex, tex_c.xy) * u_alpha;"
 			+ "}";
 }
