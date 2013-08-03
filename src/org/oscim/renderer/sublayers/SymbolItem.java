@@ -45,6 +45,8 @@ public class SymbolItem extends Inlist<SymbolItem> {
 
 	public TextureRegion symbol;
 	public Bitmap bitmap;
+
+	/** relative offset 0.5,0.5 is center, and default if offset is null */
 	public PointF offset;
 
 }
