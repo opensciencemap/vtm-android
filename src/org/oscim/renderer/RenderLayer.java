@@ -24,7 +24,7 @@ public abstract class RenderLayer {
 	protected final MapView mMapView;
 	/**
 	 * Use mMapPosition.copy(position) to keep the position for which
-	 * the Overlay is _compiled_. NOTE: required by setMatrix utility
+	 * the Overlay is _compiled_. NOTE: this is used by setMatrix utility
 	 * functions to draw this layer fixed to the map
 	 */
 	protected MapPosition mMapPosition;
@@ -73,7 +73,7 @@ public abstract class RenderLayer {
 
 	/**
 	 * Utility: Set matrices.mvp matrix relative to the difference of current
-	 * MapPosition and the last updated Overlay MapPosition.
+	 * MapPosition and mMapPosition.
 	 * Use this to 'stick' your layer to the map.
 	 *
 	 * @param position
