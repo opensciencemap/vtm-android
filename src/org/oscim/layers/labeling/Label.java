@@ -51,10 +51,4 @@ class Label extends TextItem {
 		this.x2 = x + width / 2;
 		this.y2 = y + text.fontHeight / 2;
 	}
-
-	static int comparePriority(Label l1, Label l2){
-
-
-		return 0;
-	}
 }

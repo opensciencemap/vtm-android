@@ -59,7 +59,7 @@ import android.os.Handler;
 import android.os.Looper;
 
 class TextRenderLayer extends BasicRenderLayer {
-	private final static String TAG = TextRenderLayer.class.getName();
+	//private final static String TAG = TextRenderLayer.class.getName();
 	private final static float MIN_CAPTION_DIST = 5;
 	private final static float MIN_WAY_DIST = 3;
 
@@ -629,6 +629,10 @@ class TextRenderLayer extends BasicRenderLayer {
 	/* private */LabelTask mLabelTask;
 	/* private */long mLastRun;
 
+	void renderMap(){
+		mMapView.render();
+	}
+
 	class LabelTask extends AsyncTask<Void, Void, Integer> {
 
 		@Override
@@ -639,7 +643,7 @@ class TextRenderLayer extends BasicRenderLayer {
 				labelsChanged = updateLabels();
 
 			if (!isCancelled() && labelsChanged)
-				mMapView.render();
+				renderMap();
 
 			mLastRun = System.currentTimeMillis();
 			mLabelTask = null;
