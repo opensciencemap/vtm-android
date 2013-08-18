@@ -198,6 +198,15 @@
   <!-- ways -->
   <m e="way">
 
+     <!-- non-physical boundaries - stick below until we draw some overlay style -->
+    <!-- <m k="boundary"> <m k="boundary" v="national_park">
+      <line stroke="#4ef94b" width="0.25" stroke-dasharray="15, 5, 5, 5"
+      /> -->
+    <m k="boundary" v="national_park">
+      <area fill="#d7e6b0" />
+    </m>
+
+
     <!-- landuse base -->
     <m k="landuse">
       <m v="urban">
@@ -1068,15 +1077,6 @@
           <line stroke="#cccccc" width="0.8" cap="butt" fix="true" fade="12" />
         </m>
       </m>
-    </m>
-
-
-    <!-- non-physical boundaries -->
-    <!-- <m k="boundary"> <m k="boundary" v="national_park">
-      <line stroke="#4ef94b" width="0.25" stroke-dasharray="15, 5, 5, 5"
-      /> -->
-    <m k="boundary" v="national_park">
-      <area fill="#d7e6b0" />
     </m>
 
 
