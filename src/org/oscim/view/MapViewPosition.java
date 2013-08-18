@@ -596,8 +596,6 @@ public class MapViewPosition {
 	private float mStartRotation;
 
 	private float mDuration = 500;
-	private final static double LOG4 = Math.log(4);
-
 	private long mAnimEnd = -1;
 
 	private boolean mAnimMove;
@@ -613,18 +611,15 @@ public class MapViewPosition {
 		double dy = Math.abs(MercatorProjection.latitudeToY(bbox.getMinLatitude())
 				- MercatorProjection.latitudeToY(bbox.getMaxLatitude()));
 
-		double aspect = (Math.min(mWidth, mHeight) / Tile.SIZE);
-		double z = Math.min(
-				-LOG4 * Math.log(dx) + aspect,
-				-LOG4 * Math.log(dy) + aspect);
-
-		double newScale = Math.pow(2, z);
+		double zx = mWidth / (dx * Tile.SIZE);
+		double zy = mHeight / (dy * Tile.SIZE);
+		double newScale = Math.min(zx, zy);
 
 		newScale = FastMath.clamp(newScale, MIN_SCALE, 1 << ABS_ZOOMLEVEL);
 
 		float scale = (float) (newScale / mAbsScale);
 
-		Log.d(TAG, "scale to " + bbox + " " + z + " " + newScale + " " + mAbsScale
+		Log.d(TAG, "scale to " + bbox + " " + newScale + " " + mAbsScale
 				+ " " + FastMath.log2((int) newScale) + " " + scale);
 
 		mEndScale = mAbsScale * scale - mAbsScale;
