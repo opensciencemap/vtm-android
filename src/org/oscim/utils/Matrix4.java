@@ -126,7 +126,7 @@ public class Matrix4 {
 	/**
 	 * Use this matrix as rhs, multiply it on lhs and store result.
 	 *
-	 * @param lhs right hand side
+	 * @param lhs left hand side
 	 */
 	public void multiplyLhs(Matrix4 lhs) {
 		smullhs(pointer, lhs.pointer);
