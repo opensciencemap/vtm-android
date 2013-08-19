@@ -6628,7 +6628,7 @@ void highorder(struct mesh *m, struct behavior *b) {
 /*                                                                           */
 /*****************************************************************************/
 
-void transfernodes(struct mesh *m, struct behavior *b, REAL *pointlist, REAL *pointattriblist,
+void transfernodes(struct mesh *m, struct behavior *b, IO_REAL *pointlist, IO_REAL *pointattriblist,
       int *pointmarkerlist, int numberofpoints, int numberofpointattribs) {
    vertex vertexloop;
    REAL x, y;
@@ -7326,10 +7326,10 @@ void triangulate(struct behavior *command, struct triangulateio *in, struct tria
       }
       numbernodes(&m, b); /* We must remember to number the vertices. */
    }
-   else {
+   //else {
       /* writenodes() numbers the vertices too. */
-      writenodes(&m, b, &out->pointlist, &out->pointattributelist, &out->pointmarkerlist);
-   }
+   //   writenodes(&m, b, &out->pointlist, &out->pointattributelist, &out->pointmarkerlist);
+   //}
    if (b->noelewritten) {
       if (!b->quiet) {
          printf("NOT writing triangles.\n");
@@ -7356,18 +7356,19 @@ void triangulate(struct behavior *command, struct triangulateio *in, struct tria
             out->regionlist = in->regionlist;
          }
          else {
-            out->holelist = (REAL *) NULL;
-            out->regionlist = (REAL *) NULL;
+            out->holelist = NULL;
+            out->regionlist = NULL;
          }
       }
    }
    if (b->edgesout) {
       writeedges(&m, b, &out->edgelist, &out->edgemarkerlist);
    }
-   if (b->voronoi) {
-      writevoronoi(&m, b, &vorout->pointlist, &vorout->pointattributelist, &vorout->pointmarkerlist,
-            &vorout->edgelist, &vorout->edgemarkerlist, &vorout->normlist);
-   }
+
+   //if (b->voronoi) {
+   //   writevoronoi(&m, b, &vorout->pointlist, &vorout->pointattributelist, &vorout->pointmarkerlist,
+   //         &vorout->edgelist, &vorout->edgemarkerlist, &vorout->normlist);
+   //}
    if (b->neighbors) {
       writeneighbors(&m, b, &out->neighborlist);
    }

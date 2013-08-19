@@ -128,12 +128,12 @@ jint Java_org_oscim_renderer_sublayers_ExtrusionLayer_triangulate(JNIEnv *env, j
 
    int *rings = NULL;
    if (in.numberofholes > 0) {
-      in.holelist = (float *) malloc(in.numberofholes * 2 * sizeof(float));
+      in.holelist = (double *) malloc(in.numberofholes * 2 * sizeof(double));
       rings = (int*) malloc(num_rings * sizeof(int));
    }
 
    int *seg = in.segmentlist;
-   float *hole = in.holelist;
+   double *hole = in.holelist;
 
    // counter going through all points
    int point;
@@ -181,8 +181,8 @@ jint Java_org_oscim_renderer_sublayers_ExtrusionLayer_triangulate(JNIEnv *env, j
          float ux = -vy / a;
          float uy = vx / a;
 
-         float centerx = cx + vx / 2.0 - (ux * 0.1);
-         float centery = cy + vy / 2.0 - (uy * 0.1);
+         double centerx = cx + vx / 2.0 - (ux * 0.1);
+         double centery = cy + vy / 2.0 - (uy * 0.1);
 
          *hole++ = centerx;
          *hole++ = centery;
