@@ -269,11 +269,12 @@ public class RenderThemeHandler extends DefaultHandler {
 				Symbol symbol = Symbol.create(localName, attributes);
 				mCurrentRule.addRenderingInstruction(symbol);
 
-				if ((symbol.texture = mTextureAtlas.getTextureRegion(symbol.src)) == null)
-					Log.d(TAG, "missing texture atlas item '" + symbol.src + "'");
-				else
-					Log.d(TAG, "using atlas item '" + symbol.src + "'");
-
+				if (mTextureAtlas != null) {
+					if ((symbol.texture = mTextureAtlas.getTextureRegion(symbol.src)) == null)
+						Log.d(TAG, "missing texture atlas item '" + symbol.src + "'");
+					else
+						Log.d(TAG, "using atlas item '" + symbol.src + "'");
+				}
 			}
 
 			else if (ELEMENT_NAME_USE_STYLE_LINE.equals(localName)) {
