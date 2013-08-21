@@ -26,13 +26,6 @@ import android.graphics.drawable.Drawable;
 public class AndroidGraphics {
 
 	public static OverlayMarker makeMarker(Resources res, int id, HotspotPlace place) {
-
-		//		if (place == null)
-		//			place = HotspotPlace.CENTER;
-		//
-		//Drawable drawable = ;
-		//
-		//		return new OverlayMarker(drawableToBitmap(drawable), place);
 		return makeMarker(res.getDrawable(id), place);
 	}
 
@@ -41,11 +34,8 @@ public class AndroidGraphics {
 		if (place == null)
 			place = HotspotPlace.CENTER;
 
-		//Drawable drawable = res.getDrawable(id);
-
 		return new OverlayMarker(drawableToBitmap(drawable), place);
 	}
-
 
 	public static Bitmap drawableToBitmap(Drawable drawable) {
 		if (drawable instanceof BitmapDrawable) {
