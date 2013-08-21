@@ -51,21 +51,18 @@ public class MapView extends RelativeLayout {
 	public static final boolean debugFrameTime = false;
 	public static final boolean testRegionZoom = false;
 
-	public boolean mRotationEnabled = false;
-	public boolean enablePagedFling = false;
-
 	private final GLView mGLView;
 
 	private final LayerManager mLayerManager;
 	private final MapViewPosition mMapViewPosition;
 	private final MapPosition mMapPosition;
+	private final MapEventLayer mEventLayer;
 
 	private DebugSettings mDebugSettings;
 
 	private int mWidth;
 	private int mHeight;
 	private boolean mInitialized;
-
 	// FIXME: keep until old pbmap reader is removed
 	public static boolean enableClosePolygons = false;
 
@@ -130,7 +127,8 @@ public class MapView extends RelativeLayout {
 
 		addView(mGLView, params);
 
-		mLayerManager.add(0, new MapEventLayer(this));
+		mEventLayer = new MapEventLayer(this);
+		mLayerManager.add(mEventLayer);
 
 		clearMap();
 		redrawMap(false);
@@ -142,8 +140,6 @@ public class MapView extends RelativeLayout {
 		baseLayer.setTileSource(tileSource);
 
 		mLayerManager.add(1, baseLayer);
-
-		mRotationEnabled = true;
 
 		//mLayerManager.add(new GenericOverlay(this, new GridRenderLayer(this)));
 		mLayerManager.add(new BuildingOverlay(this, baseLayer.getTileLayer()));
@@ -158,7 +154,6 @@ public class MapView extends RelativeLayout {
 	}
 
 	public MapTileLayer setBaseMap(BitmapTileLayer tileLayer) {
-		mLayerManager.add(0, new MapEventLayer(this));
 		mLayerManager.add(1, tileLayer);
 		return null;
 	}
@@ -339,12 +334,7 @@ public class MapView extends RelativeLayout {
 		return mMapViewPosition.getViewBox();
 	}
 
-	public void enableRotation(boolean enable) {
-		mRotationEnabled = enable;
+	public MapEventLayer getEventLayer(){
+		return mEventLayer;
 	}
-
-	public boolean getRotationEnabled() {
-		return mRotationEnabled;
-	}
-
 }

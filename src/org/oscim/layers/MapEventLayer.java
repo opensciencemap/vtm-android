@@ -68,6 +68,31 @@ public class MapEventLayer extends InputLayer {
 		mMapPosition = mapView.getMapViewPosition();
 	}
 
+	private boolean mEnableRotation = true;
+	private boolean mEnableTilt = true;
+	private boolean mEnableMove = true;
+	private boolean mEnableZoom = true;
+
+	public void enableRotation(boolean enable) {
+		mEnableRotation = enable;
+	}
+
+	public boolean rotationEnabled() {
+		return mEnableRotation;
+	}
+
+	public void enableTilt(boolean enable) {
+		mEnableTilt = enable;
+	}
+
+	public void enableMove(boolean enable) {
+		mEnableMove = enable;
+	}
+
+	public void enableZoom(boolean enable) {
+		mEnableZoom = enable;
+	}
+
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
 
@@ -156,7 +181,7 @@ public class MapEventLayer extends InputLayer {
 
 		boolean changed = false;
 
-		if (!mBeginTilt && (mBeginScale || startScale)) {
+		if (mEnableZoom && !mBeginTilt && (mBeginScale || startScale)) {
 			mBeginScale = true;
 
 			float scale = (float) (pinchWidth / mPrevPinchWidth);
@@ -174,11 +199,16 @@ public class MapEventLayer extends InputLayer {
 			float fx = (x2 + x1) / 2 - width / 2;
 			float fy = (y2 + y1) / 2 - height / 2;
 
+			if (!mEnableMove) {
+				fx = 0;
+				fy = 0;
+			}
+
 			//Log.d(TAG, "zoom " + deltaPinchWidth + " " + scale + " " + mSumScale);
 			changed = mMapPosition.scaleMap(scale, fx, fy);
 		}
 
-		if (!mBeginRotate && Math.abs(slope) < 1) {
+		if (mEnableTilt && !mBeginRotate && Math.abs(slope) < 1) {
 			float my2 = y2 - mPrevY2;
 			float threshold = PINCH_TILT_THRESHOLD;
 			//Log.d(TAG, r + " " + slope + " m1:" + my + " m2:" + my2);
@@ -189,7 +219,8 @@ public class MapEventLayer extends InputLayer {
 				mBeginTilt = true;
 				changed = mMapPosition.tiltMap(my / 5);
 			}
-		} else if (!mBeginTilt && (mBeginRotate || Math.abs(r) > PINCH_ROTATE_THRESHOLD)) {
+		} else if (mEnableRotation && !mBeginTilt &&
+				(mBeginRotate || Math.abs(r) > PINCH_ROTATE_THRESHOLD)) {
 			//Log.d(TAG, "rotate: " + mBeginRotate + " " + Math.toDegrees(rad));
 			if (!mBeginRotate) {
 				mAngle = rad;
@@ -199,8 +230,13 @@ public class MapEventLayer extends InputLayer {
 
 				mBeginRotate = true;
 
-				mFocusX = (width / 2) - (x1 + x2) / 2;
-				mFocusY = (height / 2) - (y1 + y2) / 2;
+				if (!mEnableMove) {
+					mFocusX = 0;
+					mFocusY = 0;
+				} else {
+					mFocusX = (width / 2) - (x1 + x2) / 2;
+					mFocusY = (height / 2) - (y1 + y2) / 2;
+				}
 			} else {
 				double da = rad - mAngle;
 				mSumRotate += da;
@@ -265,6 +301,9 @@ public class MapEventLayer extends InputLayer {
 			final float distanceY) {
 
 		if (e2.getPointerCount() == 1) {
+			if (!mEnableMove)
+				return true;
+
 			mMapPosition.moveMap(-distanceX, -distanceY);
 			mMapView.redrawMap(true);
 			return true;
@@ -278,6 +317,9 @@ public class MapEventLayer extends InputLayer {
 			float velocityY) {
 
 		if (mWasMulti)
+			return true;
+
+		if (!mEnableMove)
 			return true;
 
 		int w = Tile.SIZE * 3;
@@ -311,5 +353,4 @@ public class MapEventLayer extends InputLayer {
 				+ " " + mBeginRotate
 				+ " " + mBeginTilt);
 	}
-
 }
