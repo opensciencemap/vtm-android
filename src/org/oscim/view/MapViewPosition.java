@@ -41,7 +41,7 @@ public class MapViewPosition {
 	// TODO: remove. only used for animations
 	public final static int ABS_ZOOMLEVEL = 22;
 
-	private final static float MAX_ANGLE = 65;
+	private final static float MAX_TILT = 65;
 
 	private final MapView mMapView;
 
@@ -539,19 +539,16 @@ public class MapViewPosition {
 	}
 
 	public synchronized boolean tiltMap(float move) {
-		float tilt = FastMath.clamp(mTilt + move, 0, MAX_ANGLE);
-
-		if (mTilt == tilt)
-			return false;
-
-		setTilt(tilt);
-
-		return true;
+		return setTilt(mTilt + move);
 	}
 
-	public synchronized void setTilt(float f) {
-		mTilt = f;
+	public synchronized boolean setTilt(float tilt) {
+		tilt = FastMath.clamp(tilt, 0, MAX_TILT);
+		if (tilt == mTilt)
+			return false;
+		mTilt = tilt;
 		updateMatrix();
+		return true;
 	}
 
 	public synchronized float getTilt() {
