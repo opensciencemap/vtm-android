@@ -106,12 +106,19 @@ public class ExtrusionRenderLayer extends RenderLayer {
 		mTileLayer.getVisibleTiles(mTileSet);
 		MapTile[] tiles = mTileSet.tiles;
 
+		if (mTileSet.cnt == 0){
+			isReady = false;
+			return;
+		}
+
+		int zoom = tiles[0].zoomLevel;
+
 		// keep a list of tiles available for rendering
 		if (mTiles == null || mTiles.length < mTileSet.cnt * 4)
 			mTiles = new MapTile[mTileSet.cnt * 4];
 
 		ExtrusionLayer el;
-		if (pos.zoomLevel >= 17) {
+		if (zoom >= 17) {
 			for (int i = 0; i < mTileSet.cnt; i++) {
 				el = getLayer(tiles[i]);
 				if (el == null)
@@ -126,7 +133,7 @@ public class ExtrusionRenderLayer extends RenderLayer {
 				if (el.compiled)
 					mTiles[activeTiles++] = tiles[i];
 			}
-		} else if (pos.zoomLevel == 16) {
+		} else if (zoom == 16) {
 			// check if proxy children are ready
 			for (int i = 0; i < mTileSet.cnt; i++) {
 				MapTile t = tiles[i];
