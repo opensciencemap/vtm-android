@@ -16,11 +16,11 @@
 package org.oscim.view;
 
 import org.oscim.core.BoundingBox;
+import org.oscim.core.Box;
 import org.oscim.core.GeoPoint;
 import org.oscim.core.MapPosition;
 import org.oscim.core.MercatorProjection;
 import org.oscim.core.PointD;
-import org.oscim.core.PointF;
 import org.oscim.core.Tile;
 import org.oscim.utils.FastMath;
 import org.oscim.utils.Matrix4;
@@ -74,7 +74,9 @@ public class MapViewPosition {
 	private final PointD mMovePoint = new PointD();
 	private final float[] mv = new float[4];
 	private final float[] mu = new float[4];
-	private final float[] mBBoxCoords = new float[8];
+	private final float[] mViewCoords = new float[8];
+
+	private final Box mMapBBox = new Box();
 
 	private float mHeight, mWidth;
 
@@ -247,49 +249,49 @@ public class MapViewPosition {
 	 * @return BoundingBox containing view
 	 */
 	public synchronized BoundingBox getViewBox() {
+		getViewBox(mMapBBox);
 
-		float[] coords = mBBoxCoords;
-		// get depth at bottom and top
-		float t = getZ(1);
-		float t2 = getZ(-1);
-
-		// project screen corners onto map
-		unproject(1, -1, t, coords, 0);
-		unproject(-1, -1, t, coords, 2);
-		unproject(-1, 1, t2, coords, 4);
-		unproject(1, 1, t2, coords, 6);
-
-		double minX = Double.MAX_VALUE;
-		double minY = Double.MAX_VALUE;
-		double maxX = Double.MIN_VALUE;
-		double maxY = Double.MIN_VALUE;
-
-		// get axis-aligned bbox coordinates enclosing
-		// enclosing the map trapezoid
-		for (int i = 0; i < 8; i += 2) {
-			double dx = mCurX - coords[i + 0];
-			double dy = mCurY - coords[i + 1];
-
-			minX = Math.min(minX, dx);
-			maxX = Math.max(maxX, dx);
-			minY = Math.min(minY, dy);
-			maxY = Math.max(maxY, dy);
-		}
-
-		// scale map-pixel coordinates at current scale
-		// to absolute coordinates and apply mercator
-		// projection.
-		double minLon = MercatorProjection.toLongitude(minX / mCurScale);
-		double maxLon = MercatorProjection.toLongitude(maxX / mCurScale);
-		double minLat = MercatorProjection.toLatitude(maxY / mCurScale);
-		double maxLat = MercatorProjection.toLatitude(minY / mCurScale);
+		// scale map-pixel coordinates at current scale to
+		// absolute coordinates and apply mercator projection.
+		double minLon = MercatorProjection.toLongitude(mMapBBox.minX);
+		double maxLon = MercatorProjection.toLongitude(mMapBBox.maxX);
+		// sic(k)
+		double minLat = MercatorProjection.toLatitude(mMapBBox.maxY);
+		double maxLat = MercatorProjection.toLatitude(mMapBBox.minY);
 
 		return new BoundingBox(minLat, minLon, maxLat, maxLon);
 	}
 
 	/**
-	 * For x, y in screen coordinates set Point to map-tile
-	 * coordinates at returned scale.
+	 * Get the minimal axis-aligned BoundingBox that encloses
+	 * the visible part of the map. Sets box to map coordinates:
+	 * minX,minY,maxY,maxY
+	 */
+	public synchronized void getViewBox(Box box) {
+		float[] coords = mViewCoords;
+		getMapViewProjection(coords);
+
+		box.minX = coords[0];
+		box.maxX = coords[0];
+		box.minY = coords[1];
+		box.maxY = coords[1];
+
+		for (int i = 2; i < 8; i += 2) {
+			box.minX = Math.min(box.minX, coords[i]);
+			box.maxX = Math.max(box.maxX, coords[i]);
+			box.minY = Math.min(box.minY, coords[i + 1]);
+			box.maxY = Math.max(box.maxY, coords[i + 1]);
+		}
+
+		box.minX = (mCurX + box.minX) / mCurScale;
+		box.maxX = (mCurX + box.maxX) / mCurScale;
+		box.minY = (mCurY + box.minY) / mCurScale;
+		box.maxY = (mCurY + box.maxY) / mCurScale;
+	}
+
+	/**
+	 * For x, y in screen coordinates set Point to
+	 * map-tile pixel coordinates at current scale.
 	 *
 	 * @param x screen coordinate
 	 * @param y screen coordinate
@@ -354,25 +356,69 @@ public class MapViewPosition {
 	}
 
 	/**
+	 * Get the map position for x,y in screen coordinates.
+	 *
+	 * @param x screen coordinate
+	 * @param y screen coordinate
+	 */
+	public synchronized void fromScreenPixels(double x, double y, PointD out) {
+		// scale to -1..1
+		float mx = (float) (1 - (x / mWidth * 2));
+		float my = (float) (1 - (y / mHeight * 2));
+
+		unproject(-mx, my, getZ(-my), mu, 0);
+
+		double dx = mCurX + mu[0];
+		double dy = mCurY + mu[1];
+
+		dx /= mCurScale;
+		dy /= mCurScale;
+
+		if (dx > 1) {
+			while (dx > 1)
+				dx -= 1;
+		} else {
+			while (dx < 0)
+				dx += 1;
+		}
+
+		if (dy > 1)
+			dy = 1;
+		else if (dy < 0)
+			dy = 0;
+
+		out.x = dx;
+		out.y = dy;
+	}
+
+	/**
 	 * Get the screen pixel for a GeoPoint
 	 *
 	 * @param geoPoint the GeoPoint
 	 * @param out Point projected to screen pixel
 	 */
-	public synchronized void project(GeoPoint geoPoint, PointF out) {
+	public synchronized void project(GeoPoint geoPoint, PointD out) {
+		MercatorProjection.project(geoPoint, out);
+		project(out.x, out.y, out);
+	}
 
-		double x = MercatorProjection.longitudeToX(geoPoint.getLongitude()) * mCurScale;
-		double y = MercatorProjection.latitudeToY(geoPoint.getLatitude()) * mCurScale;
+	/**
+	 * Get the screen pixel for map position
+	 *
+	 * @param out Point projected to screen pixel
+	 */
+	public synchronized void project(double x, double y, PointD out) {
 
-		mv[0] = (float) (x - mCurX);
-		mv[1] = (float) (y - mCurY);
+		mv[0] = (float) (x * mCurScale - mCurX);
+		mv[1] = (float) (y * mCurScale - mCurY);
 
 		mv[2] = 0;
 		mv[3] = 1;
 
 		mVPMatrix.prj(mv);
-		out.x = (int) (mv[0] * (mWidth / 2));
-		out.y = (int) -(mv[1] * (mHeight / 2));
+
+		out.x = (mv[0] * (mWidth / 2));
+		out.y = -(mv[1] * (mHeight / 2));
 	}
 
 	private void updateMatrix() {

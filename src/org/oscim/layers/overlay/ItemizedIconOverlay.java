@@ -18,6 +18,7 @@ package org.oscim.layers.overlay;
 import java.util.List;
 
 import org.oscim.core.BoundingBox;
+import org.oscim.core.PointD;
 import org.oscim.core.PointF;
 import org.oscim.view.MapView;
 import org.oscim.view.MapViewPosition;
@@ -31,7 +32,7 @@ public class ItemizedIconOverlay<Item extends OverlayItem> extends ItemizedOverl
 	protected OnItemGestureListener<Item> mOnItemGestureListener;
 	private int mDrawnItemsLimit = Integer.MAX_VALUE;
 
-	private final PointF mItemPoint = new PointF();
+	private final PointD mItemPoint = new PointD();
 
 	public ItemizedIconOverlay(MapView mapView, List<Item> list, OverlayMarker defaultMarker,
 			ItemizedIconOverlay.OnItemGestureListener<Item> onItemGestureListener) {
@@ -182,8 +183,8 @@ public class ItemizedIconOverlay<Item extends OverlayItem> extends ItemizedOverl
 			// TODO use intermediate projection
 			mapViewPosition.project(item.getPoint(), mItemPoint);
 
-			float dx = mItemPoint.x - eventX;
-			float dy = mItemPoint.y - eventY;
+			double dx = mItemPoint.x - eventX;
+			double dy = mItemPoint.y - eventY;
 
 			//Log.d(TAG, item.getTitle() + " " + mItemPoint + " " + dx + "/" + dy);
 

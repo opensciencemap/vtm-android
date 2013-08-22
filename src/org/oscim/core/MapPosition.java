@@ -18,14 +18,15 @@ package org.oscim.core;
 import org.oscim.utils.FastMath;
 
 /** A MapPosition Container. */
-public class MapPosition {
+public class MapPosition extends PointD {
 	public final static int MAX_ZOOMLEVEL = 20;
 	public final static int MIN_ZOOMLEVEL = 2;
 
 	/** projected position x 0..1 */
-	public double x;
+	//public double x;
 	/** projected position y 0..1 */
-	public double y;
+	//public double y;
+
 	/** absolute scale */
 	public double scale;
 
