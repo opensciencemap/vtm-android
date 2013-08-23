@@ -204,17 +204,23 @@ public class MapViewPosition {
 	 * and the map plane
 	 */
 	private float getZ(float y) {
+
 		// origin is moved by VIEW_DISTANCE
 		double cx = VIEW_DISTANCE;
 		// 'height' of the ray
 		double ry = y * (mHeight / mWidth) * 0.5f;
 
-		// tilt of the plane (center is kept on x = 0)
-		double t = Math.toRadians(mTilt);
-		double px = y * Math.sin(t);
-		double py = y * Math.cos(t);
+		double ua;
 
-		double ua = 1 + (px * ry) / (py * cx);
+		if (y == 0)
+			ua = 1;
+		else{
+			// tilt of the plane (center is kept on x = 0)
+			double t = Math.toRadians(mTilt);
+			double px = y * Math.sin(t);
+			double py = y * Math.cos(t);
+			ua = 1 + (px * ry) / (py * cx);
+		}
 
 		mv[0] = 0;
 		mv[1] = (float) (ry / ua);
