@@ -101,10 +101,11 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 	private static Matrices mMatrices;
 
-	//private
-	static float[] mClearColor = null;
+	private static float[] mClearColor = null;
 
-	public static int mQuadIndicesID;
+	private static int mQuadIndicesID;
+	private static int mQuadVerticesID;
+
 	public final static int maxQuads = 64;
 
 	private static boolean mUpdateColor = false;
@@ -112,6 +113,8 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 	// drawlock to synchronize Main- and GL-Thread
 	// static ReentrantLock tilelock = new ReentrantLock();
 	public static ReentrantLock drawlock = new ReentrantLock();
+
+	public static long frametime;
 
 	/**
 	 * @param mapView
@@ -232,6 +235,7 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		// while rendering is going on.
 		drawlock.lock();
 		try {
+			frametime = SystemClock.elapsedRealtime();
 			draw();
 		} finally {
 			drawlock.unlock();
@@ -352,9 +356,9 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		// set initial temp buffer size
 		growBuffer(MB >> 2);
 
-		// upload quad indices used by Texture- and LineTexRenderer
-		int[] vboIds = new int[1];
-		GLES20.glGenBuffers(1, vboIds, 0);
+		// initialize quad indices used by Texture- and LineTexRenderer
+		int[] vboIds = new int[2];
+		GLES20.glGenBuffers(2, vboIds, 0);
 		mQuadIndicesID = vboIds[0];
 		int maxIndices = maxQuads * 6;
 		short[] indices = new short[maxIndices];
@@ -371,11 +375,21 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 		shortBuffer.put(indices);
 		shortBuffer.flip();
 
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-				mQuadIndicesID);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,	mQuadIndicesID);
 		GLES20.glBufferData(GLES20.GL_ELEMENT_ARRAY_BUFFER,
 				indices.length * 2, shortBuffer, GLES20.GL_STATIC_DRAW);
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		// initialize default quad
+		float[] quad = new float[] { -1, -1, -1, 1, 1, -1, 1, 1 };
+		floatBuffer.put(quad);
+		floatBuffer.flip();
+		mQuadVerticesID = vboIds[1];
+
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,	mQuadVerticesID);
+		GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER,
+				quad.length * 4, floatBuffer, GLES20.GL_STATIC_DRAW);
+		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
 		if (mClearColor != null)
 			mUpdateColor = true;
@@ -404,5 +418,13 @@ public class GLRenderer implements GLSurfaceView.Renderer {
 
 	void clearBuffer() {
 		mNewSurface = true;
+	}
+
+	public static int getQuadIndicesVBO() {
+		return mQuadIndicesID;
+	}
+
+	public static int getQuadVertexVBO() {
+		return mQuadVerticesID;
 	}
 }

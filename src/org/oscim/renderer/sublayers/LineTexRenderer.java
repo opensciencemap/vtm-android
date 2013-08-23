@@ -19,8 +19,8 @@ import java.nio.ByteOrder;
 
 import org.oscim.core.MapPosition;
 import org.oscim.renderer.GLRenderer;
-import org.oscim.renderer.GLState;
 import org.oscim.renderer.GLRenderer.Matrices;
+import org.oscim.renderer.GLState;
 import org.oscim.theme.renderinstruction.Line;
 import org.oscim.utils.GlUtils;
 
@@ -119,7 +119,7 @@ public class LineTexRenderer {
 
 		int maxIndices = GLRenderer.maxQuads * 6;
 		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER,
-				GLRenderer.mQuadIndicesID);
+				GLRenderer.getQuadIndicesVBO());
 
 		GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, mVertexFlipID);
 		GLES20.glVertexAttribPointer(hVertexFlip, 1,

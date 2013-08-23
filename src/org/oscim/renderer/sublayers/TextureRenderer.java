@@ -74,7 +74,7 @@ public final class TextureRenderer {
 		m.proj.setAsUniform(hTextureProjMatrix);
 		m.mvp.setAsUniform(hTextureMVMatrix);
 
-		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLRenderer.mQuadIndicesID);
+		GLES20.glBindBuffer(GLES20.GL_ELEMENT_ARRAY_BUFFER, GLRenderer.getQuadIndicesVBO());
 
 		for (TextureItem ti = tl.textures; ti != null; ti = ti.next) {
 
