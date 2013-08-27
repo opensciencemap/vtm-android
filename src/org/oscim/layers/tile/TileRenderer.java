@@ -175,21 +175,17 @@ public class TileRenderer {
 					break;
 
 				case Layer.LINE:
-					if (!clipped) {
-						// draw stencil buffer clip region
-						PolygonRenderer.draw(pos, null, m, true, div, true);
-						clipped = true;
-					}
-					l = LineRenderer.draw(t.layers, l, pos, m, div, simpleShader);
-					break;
-
 				case Layer.TEXLINE:
 					if (!clipped) {
 						// draw stencil buffer clip region
 						PolygonRenderer.draw(pos, null, m, true, div, true);
 						clipped = true;
 					}
-					l = LineTexRenderer.draw(t.layers, l, pos, m, div);
+					if (l.type == Layer.LINE)
+						l = LineRenderer.draw(t.layers, l, pos, m, div, simpleShader);
+					else
+						l = LineTexRenderer.draw(t.layers, l, pos, m, div);
+
 					break;
 
 				default:
@@ -201,6 +197,12 @@ public class TileRenderer {
 		for (Layer l = t.layers.textureLayers; l != null;) {
 			switch (l.type) {
 				case Layer.BITMAP:
+					if (!clipped) {
+						// draw stencil buffer clip region
+						PolygonRenderer.draw(pos, null, m, true, div, true);
+						clipped = true;
+					}
+
 					l = BitmapRenderer.draw(l, m, 1, mFade);
 					break;
 

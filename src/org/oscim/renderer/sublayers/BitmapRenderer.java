@@ -59,7 +59,7 @@ public final class BitmapRenderer {
 	}
 
 	public static Layer draw(Layer layer, Matrices m, float scale, float alpha) {
-		GLState.test(false, false);
+		//GLState.test(false, false);
 		GLState.blend(true);
 
 		GLState.useProgram(mTextureProgram);
