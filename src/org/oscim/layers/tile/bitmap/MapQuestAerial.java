@@ -59,4 +59,14 @@ public class MapQuestAerial extends AbstractTileSource {
 	public byte getZoomLevelMin() {
 		return ZOOM_LEVEL_MIN;
 	}
+
+	@Override
+	public FadeStep[] getFadeSteps() {
+		return new FadeStep[] {
+				new FadeStep(ZOOM_LEVEL_MIN, ZOOM_LEVEL_MAX - 1, 1, 0.7f),
+				// dont fade between zoom-min/max
+				// fade above zoom max + 2, interpolate 1 to 0
+				new FadeStep(ZOOM_LEVEL_MAX - 1, ZOOM_LEVEL_MAX + 1, 0.7f, 0)
+		};
+	}
 }
