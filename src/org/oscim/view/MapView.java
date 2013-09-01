@@ -293,6 +293,10 @@ public class MapView extends RelativeLayout {
 		mMapViewPosition.setMapPosition(mapPosition);
 	}
 
+	public void getMapPosition(MapPosition mapPosition) {
+		mMapViewPosition.getMapPosition(mapPosition);
+	}
+
 	/**
 	 * Sets the center of the MapView and triggers a redraw.
 	 *
