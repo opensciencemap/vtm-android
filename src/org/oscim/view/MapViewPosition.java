@@ -135,16 +135,15 @@ public class MapViewPosition {
 	 */
 	public synchronized boolean getMapPosition(MapPosition pos) {
 
-		int z = FastMath.log2((int) mAbsScale);
-		//z = FastMath.clamp(z, MIN_ZOOMLEVEL, MAX_ZOOMLEVEL);
-		//float scale = (float) (mAbsScale / (1 << z));
-
-		boolean changed = (pos.zoomLevel != z
-				|| pos.x != mAbsX
-				|| pos.y != mAbsY
+		boolean changed = (pos.x != mAbsX || pos.y != mAbsY
 				|| pos.scale != mAbsScale
 				|| pos.angle != mRotation
 				|| pos.tilt != mTilt);
+
+		if (!changed)
+			return false;
+
+		int z = FastMath.log2((int) mAbsScale);
 
 		pos.angle = mRotation;
 		pos.tilt = mTilt;
@@ -153,10 +152,9 @@ public class MapViewPosition {
 		pos.y = mAbsY;
 		pos.scale = mAbsScale;
 
-		// for tiling
 		pos.zoomLevel = z;
 
-		return changed;
+		return true;
 	}
 
 	/**
@@ -329,36 +327,10 @@ public class MapViewPosition {
 	 * @return the corresponding GeoPoint
 	 */
 	public synchronized GeoPoint fromScreenPixels(float x, float y) {
-		// scale to -1..1
-		float mx = 1 - (x / mWidth * 2);
-		float my = 1 - (y / mHeight * 2);
-
-		unproject(-mx, my, getZ(-my), mu, 0);
-
-		double dx = mCurX + mu[0];
-		double dy = mCurY + mu[1];
-
-		dx /= mCurScale;
-		dy /= mCurScale;
-
-		if (dx > 1) {
-			while (dx > 1)
-				dx -= 1;
-		} else {
-			while (dx < 0)
-				dx += 1;
-		}
-
-		if (dy > 1)
-			dy = 1;
-		else if (dy < 0)
-			dy = 0;
-
-		GeoPoint p = new GeoPoint(
-				MercatorProjection.toLatitude(dy),
-				MercatorProjection.toLongitude(dx));
-
-		return p;
+		fromScreenPixels(x, y, mMovePoint);
+		return new GeoPoint(
+				MercatorProjection.toLatitude(mMovePoint.y),
+				MercatorProjection.toLongitude(mMovePoint.x));
 	}
 
 	/**
@@ -615,19 +587,18 @@ public class MapViewPosition {
 	}
 
 	public synchronized void setMapPosition(MapPosition mapPosition) {
-		setZoomLevelLimit(mapPosition.zoomLevel);
+		mAbsScale = FastMath.clamp(mapPosition.scale, MIN_SCALE, MAX_SCALE);
 		mAbsX = mapPosition.x;
 		mAbsY = mapPosition.y;
+		mTilt = mapPosition.tilt;
+		mRotation = mapPosition.angle;
 		updatePosition();
+		updateMatrix();
 	}
 
 	synchronized void setMapCenter(GeoPoint geoPoint) {
 		setMapCenter(geoPoint.getLatitude(), geoPoint.getLongitude());
 		updatePosition();
-	}
-
-	private void setZoomLevelLimit(int zoomLevel) {
-		mAbsScale = FastMath.clamp(1 << zoomLevel, MIN_SCALE, MAX_SCALE);
 	}
 
 	/************************************************************************/
