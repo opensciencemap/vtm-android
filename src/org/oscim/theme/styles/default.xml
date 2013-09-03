@@ -591,14 +591,14 @@ map-background="#fffcfa">
           <line stroke="#f2df6d" width="1.3" cap="butt" fix="true" fade="9"/>
           </m> -->
 
-          <m v="route_primary" zoom-min="3">
-            <line stroke="#c6c5a2" width="1.4" cap="butt" fix="true" fade="3" />
+          <m v="route_primary" zoom-min="4">
+            <line stroke="#c6c5a2" width="1.4" cap="butt" fix="true" fade="4" />
           </m>
           <m v="route_trunk" zoom-min="3">
-            <line stroke="#c6c5a2" width="1.4" cap="butt" fix="true" fade="3" />
+            <line stroke="#c6c5a2" width="1.4" cap="butt" fix="true" fade="4" />
           </m>
           <m v="route_motorway">
-            <line stroke="#deb683" width="1.5" cap="butt" fix="true" fade="3" />
+            <line stroke="#deb683" width="1.5" cap="butt" fix="true" fade="4" />
           </m>
         </m>
       </m>
