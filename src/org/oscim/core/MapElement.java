@@ -48,6 +48,15 @@ public class MapElement extends GeometryBuffer {
 	public void clear() {
 		super.clear();
 	}
+
+	public void addTag(String key, String value) {
+		tags.add(new Tag(key, value));
+	}
+
+	public void addTag(Tag tag) {
+		tags.add(tag);
+	}
+
 	// ---- random stuff, to be removed ----
 	// building tags
 	public int height;
