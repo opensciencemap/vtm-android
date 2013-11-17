@@ -17,20 +17,20 @@ package org.oscim.utils;
 /**
  * from http://en.wikipedia.org/wiki/Cohen%E2%80%93
  * Sutherland_algorithm
- *
+ * 
  * @adapted by Hannes Janetzek
  */
 
 public class LineClipper {
 
-	private static final int INSIDE = 0; // 0000
-	private static final int LEFT = 1; // 0001
-	private static final int RIGHT = 2; // 0010
-	private static final int BOTTOM = 4; // 0100
-	private static final int TOP = 8; // 1000
+	public static final int INSIDE = 0; // 0000
+	public static final int LEFT = 1; // 0001
+	public static final int RIGHT = 2; // 0010
+	public static final int BOTTOM = 4; // 0100
+	public static final int TOP = 8; // 1000
 
 	private final int xmin, xmax, ymin, ymax;
-	public final int[] out;
+	public final float[] out;
 
 	public LineClipper(int minx, int miny, int maxx, int maxy) {
 		this.xmin = minx;
@@ -46,41 +46,42 @@ public class LineClipper {
 		this.xmax = maxx;
 		this.ymax = maxy;
 		if (keepResult)
-			this.out = new int[4];
+			this.out = new float[4];
 		else
 			this.out = null;
 	}
 
 	private int mPrevOutcode;
-	private int mPrevX;
-	private int mPrevY;
+	private float mPrevX;
+	private float mPrevY;
 
-	public int outX;
-	public int outY;
+	//public int outX;
+	//public int outY;
 
-	public void clipStart(int x0, int y0) {
+	public boolean clipStart(float x0, float y0) {
 		mPrevX = x0;
 		mPrevY = y0;
 
-		int outcode = INSIDE;
+		mPrevOutcode = INSIDE;
 		if (x0 < xmin)
-			outcode |= LEFT;
+			mPrevOutcode |= LEFT;
 		else if (x0 > xmax)
-			outcode |= RIGHT;
+			mPrevOutcode |= RIGHT;
 		if (y0 < ymin)
-			outcode |= BOTTOM;
+			mPrevOutcode |= BOTTOM;
 		else if (y0 > ymax)
-			outcode |= TOP;
+			mPrevOutcode |= TOP;
 
-		mPrevOutcode = outcode;
+		return mPrevOutcode == INSIDE;
 	}
 
 	/**
 	 * @param x1 ...
 	 * @param y1 ...
-	 * @return 0 if not intersection, 1 fully within, -1 clipped (and 'out' set to new points)
+	 * @return 0 if not intersection, 1 fully within, -1 clipped (and 'out' set
+	 *         to new points)
 	 */
-	public int clipNext(int x1, int y1) {
+	public int clipNext(float x1, float y1) {
 		int accept;
 
 		int outcode = INSIDE;
@@ -101,7 +102,7 @@ public class LineClipper {
 			accept = 0;
 		} else {
 			accept = clip(mPrevX, mPrevY, x1, y1, xmin, ymin, xmax, ymax, mPrevOutcode, outcode,
-					this.out) ? -1 : 0;
+			              this.out) ? -1 : 0;
 		}
 		mPrevOutcode = outcode;
 		mPrevX = x1;
@@ -113,8 +114,8 @@ public class LineClipper {
 	// CohenSutherland clipping algorithm clips a line from
 	// P0 = (x0, y0) to P1 = (x1, y1) against a rectangle with
 	// diagonal from (xmin, ymin) to (xmax, ymax).
-	private static boolean clip(int x0, int y0, int x1, int y1,
-			int xmin, int ymin, int xmax, int ymax, int outcode0, int outcode1, int[] out) {
+	private static boolean clip(float x0, float y0, float x1, float y1,
+	        int xmin, int ymin, int xmax, int ymax, int outcode0, int outcode1, float[] out) {
 
 		boolean accept = false;
 
@@ -129,12 +130,11 @@ public class LineClipper {
 			} else {
 				// failed both tests, so calculate the line segment to clip
 				// from an outside point to an intersection with clip edge
-				int x = 0;
-				int y = 0;
+				float x = 0;
+				float y = 0;
 
 				// At least one endpoint is outside the clip rectangle; pick it.
 				int outcodeOut = (outcode0 == 0) ? outcode1 : outcode0;
-
 				// Now find the intersection point;
 				// use formulas y = y0 + slope * (x - x0), x = x0 + (1 / slope) * (y - y0)
 				if ((outcodeOut & TOP) != 0) { // point is above the clip rectangle
