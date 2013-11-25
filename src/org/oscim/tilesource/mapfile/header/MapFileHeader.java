@@ -232,14 +232,14 @@ public class MapFileHeader {
 			updateZoomLevelInformation(tempSubFileParameters[currentSubFile]);
 		}
 
-		mapFileInfoBuilder.zoomLevel = new int[numberOfSubFiles];
+		//mapFileInfoBuilder.zoomLevel = new int[numberOfSubFiles];
 
 		// create and fill the lookup table for the sub-files
 		this.subFileParameters = new SubFileParameter[this.zoomLevelMaximum + 1];
 		for (int currentMapFile = 0; currentMapFile < numberOfSubFiles; ++currentMapFile) {
 			SubFileParameter subFileParameter = tempSubFileParameters[currentMapFile];
 
-			mapFileInfoBuilder.zoomLevel[currentMapFile] = subFileParameter.baseZoomLevel;
+			//mapFileInfoBuilder.zoomLevel[currentMapFile] = subFileParameter.baseZoomLevel;
 
 			for (byte zoomLevel = subFileParameter.zoomLevelMin; zoomLevel <= subFileParameter.zoomLevelMax; ++zoomLevel) {
 				this.subFileParameters[zoomLevel] = subFileParameter;
