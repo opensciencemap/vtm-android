@@ -479,12 +479,21 @@ public class MapDatabase implements ITileDataSource {
 					return false;
 				}
 			}
-
 			// get the POI latitude offset (VBE-S)
 			int latitude = mTileLatitude + mReadBuffer.readSignedInt();
 
 			// get the POI longitude offset (VBE-S)
 			int longitude = mTileLongitude + mReadBuffer.readSignedInt();
+
+			float lon = (float) (longitude / divx - dx);
+
+			double sinLat = Math.sin(latitude * PI180);
+			float lat = Tile.SIZE
+					- (float) ((Math.log((1.0 + sinLat) / (1.0 - sinLat)) * divy + dy));
+
+			boolean drop = false;
+			if (lon < 0 || lat < 0 || lon > Tile.SIZE || lat > Tile.SIZE)
+				drop = true;
 
 			// get the special byte which encodes multiple flags
 			byte specialByte = mReadBuffer.readByte();
@@ -511,7 +520,9 @@ public class MapDatabase implements ITileDataSource {
 			// check if the POI has a name
 			if ((featureByte & POI_FEATURE_NAME) != 0) {
 				String str = mReadBuffer.readUTF8EncodedString();
-				mElem.tags.add(new Tag(Tag.TAG_KEY_NAME, str, false));
+
+				if (!drop)
+					mElem.tags.add(new Tag(Tag.TAG_KEY_NAME, str, false));
 			}
 
 			// check if the POI has a house number
@@ -529,11 +540,8 @@ public class MapDatabase implements ITileDataSource {
 				// Integer.toString(mReadBuffer.readSignedInt())));
 			}
 
-			float lon = (float) (longitude / divx - dx);
-
-			double sinLat = Math.sin(latitude * PI180);
-			float lat = Tile.SIZE
-					- (float) ((Math.log((1.0 + sinLat) / (1.0 - sinLat)) * divy + dy));
+			if (drop)
+				continue;
 
 			mElem.clear();
 			mElem.setLayer(layer);
